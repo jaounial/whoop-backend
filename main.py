@@ -7,6 +7,15 @@ load_dotenv()
 
 app = FastAPI()
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://YOUR-SQUARESPACE-DOMAIN.com", "https://www.YOUR-SQUARESPACE-DOMAIN.com"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 CLIENT_ID = os.getenv("WHOOP_CLIENT_ID")
 CLIENT_SECRET = os.getenv("WHOOP_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("WHOOP_REDIRECT_URI")
