@@ -105,10 +105,31 @@ def whoop_get(path: str):
 
 @app.get("/whoop/summary")
 def summary():
-    # basic example: last 7 recovery scores
     recovery = whoop_get("recovery")
-    scores = [r["score"]["recovery_score"] for r in recovery["records"][:7]]
-    avg = round(sum(scores) / len(scores), 1) if scores else None
-    return {"recovery_last_7": scores, "avg_recovery_7d": avg}
+    workouts = whoop_get("activity/workout")
+    sleep = whoop_get("activity/sleep")
+
+    rec_records = recovery.get("records", [])[:7]
+    wo_records = workouts.get("records", [])[:7]
+    sl_records = sleep.get("records", [])[:7]
+
+    rec_scores = [r["score"]["recovery_score"] for r in rec_records if r.get("score")]
+    strain_scores = [w["score"]["strain"] for w in wo_records if w.get("score")]
+    sleep_perf = [s["score"]["sleep_performance_percentage"] for s in sl_records if s.get("score")]
+
+    def avg(xs):
+        return round(sum(xs) / len(xs), 1) if xs else None
+
+    return {
+        "averages": {
+            "recovery": avg(rec_scores),
+            "strain": avg(strain_scores),
+            "sleep": avg(sleep_perf),
+        },
+        "recovery": rec_scores,
+        "strain": strain_scores,
+        "sleep": sleep_perf,
+    }
+
 
 
