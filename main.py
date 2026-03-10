@@ -9,9 +9,12 @@ app = FastAPI()
 
 from fastapi.middleware.cors import CORSMiddleware
 
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://YOUR-SQUARESPACE-DOMAIN.com", "https://www.YOUR-SQUARESPACE-DOMAIN.com"],
+    allow_origins=[FRONTEND_URL],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -96,7 +99,7 @@ def callback(
         return {"connected": False, "token_error": resp.status_code, "body": resp.text}
 
     TOKEN_STORE["token"] = resp.json()
-    return {"connected": True}
+    return RedirectResponse(f"{FRONTEND_URL}/dashboard")
 
 
 
